@@ -11,6 +11,5 @@
 |
 */
 
-
-//Route::get('/{method}', 'MethodController@methodRes')->where('name', '[A-Za-z|]+');;
-Route::get('/', 'MethodController@methodRes');
+// 默认路由
+Route::get('/{uri}', 'MethodController@methodRes')->where('uri', '(.*)');

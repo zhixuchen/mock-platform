@@ -11,8 +11,8 @@ class MethodController extends Controller
 {
     public function methodRes(Request $request)
     {
-        $method = '/api/otherOnLineTask/addEighteenthTask';
-        $methodRes = MockProjectMethod::where('uri', $method)->first();
+        $uri = '/' . trim($request->uri, '/');
+        $methodRes = MockProjectMethod::where('uri', $uri)->first();
         return $methodRes->result ?? '';
     }
 }
