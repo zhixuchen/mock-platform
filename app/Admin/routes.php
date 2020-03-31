@@ -11,5 +11,6 @@ Route::group([
 ], function (Router $router) {
     $router->resource('mockProject', MockProjectController::class);
     $router->resource('mockProjectMethod', MockProjectMethodController::class);
+    $router->resource('Callback', MockCallbackController::class);
     $router->get('/', 'HomeController@index')->name('admin.home');
 });
