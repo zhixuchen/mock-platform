@@ -1,0 +1,15 @@
+{
+  "name": "sentiger/ali-dy",
+  "authors": [
+    {
+      "name": "Sentiger Shi",
+      "email": "shi_wenhu@qq.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Sentiger\\AliDy\\": "src/"
+    }
+  },
+  "require": {}
+}
