@@ -10,3 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+//Route::get('/{method}', 'MethodController@methodRes')->where('name', '[A-Za-z|]+');;
+Route::get('/', 'MethodController@methodRes');
