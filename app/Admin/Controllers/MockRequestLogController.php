@@ -70,7 +70,6 @@ class MockRequestLogController extends AdminController
     protected function form()
     {
         $form = new Form(new MockRequestLog());
-
         $form->text('type', '请求类型');
         $form->number('method_id', '请求关联id');
         $form->text('name', '请求名称');
