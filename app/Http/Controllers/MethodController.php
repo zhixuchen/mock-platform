@@ -61,7 +61,8 @@ class MethodController extends MethodFunctionController
         $url=$request->getBaseUrl().$request->getRequestUri();
 
         MethodFunctionController::set_request_log("request",$method_id,$method_name,$url,json_encode($data),$request_method,$response);
-        return $response;
+
+        return response()->json(json_decode($response, true));
 
     }
 }
