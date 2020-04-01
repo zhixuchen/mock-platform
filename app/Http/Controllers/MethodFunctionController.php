@@ -47,9 +47,8 @@ class MethodFunctionController extends Controller
         }
     }
 
-    public static function getmethod_id($data, $uri)
+    public static function getmethod_id($data, $uri) #$data不要删除，下面的$rule 规则里需要用到
     {
-
         $methodRes = MockProject::select(
             'mock_project.id',
             'mock_project_method.project_id',
@@ -60,12 +59,24 @@ class MethodFunctionController extends Controller
         )->leftJoin('mock_project_method', 'mock_project.id', 'mock_project_method.project_id')
             ->where('mock_project_method.uri', $uri)
             ->get();
-        $data = json_encode($data);#不要删除，下面的$rule 规则里需要用到
+
         foreach ($methodRes as $methodRe) {
             $rule = $methodRe->rule;
             $route = $methodRe->route;
-            eval($rule);
-            if ($route == $value or strlen($route) === 0) {##$value为执行$rule时声明的变量
+            if (strlen($route) != 0) {
+                eval($rule);
+                if ($route == $value) {
+                    $method_id = $methodRe->id;
+                    $name = $methodRe->name;
+                    $result = array(
+                        "method_id" => $method_id,
+                        "name" => $name
+                    );
+
+                    return $result;
+                }
+            }
+            else {
                 $method_id = $methodRe->id;
                 $name = $methodRe->name;
                 $result = array(
@@ -74,18 +85,15 @@ class MethodFunctionController extends Controller
                 );
 
                 return $result;
-            } else {
-                $result = array(
-                    "method_id" => 0,
-                    "name" => "未找到方法"
-                );
-
-
 
             }
 
-
         }
+        $result = array(
+            "method_id" => 0,
+            "name" => "未找到方法"
+        );
+
         return $result;
     }
 

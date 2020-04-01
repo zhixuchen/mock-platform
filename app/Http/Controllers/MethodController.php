@@ -12,21 +12,20 @@ class MethodController extends MethodFunctionController
 {
     public function methodRes(Request $request)
     {
-        header('Content-Type:application/json; charset=UTF-8');
         $uri = '/' . trim($request->uri, '/');
         $request_uri = MethodFunctionController::getmethod_uri($uri);
-        $data = $request->all();
+        $request_method=$request->method();
+        $url="http://".$request->getHttpHost().$request->getRequestUri();
+        $data =json_encode( $request->all());
         $getmethod=MethodFunctionController::getmethod_id($data,$request_uri);
         $method_id=$getmethod["method_id"];
         $method_name=$getmethod["name"];
-//        dd($method_id);
         $methodRes = MockProjectMethod::where('id', $method_id)->first();
-
-        $response = $methodRes->result ?? '';
-
+        $error_result=array("url"=>$url,"method"=>$request_method,"body"=>$data);
+        $error_result=json_encode($error_result);
+        $response = $methodRes->result ?? $error_result;
         $methodPragram = $methodRes->pragram ?? '';
         $pragrams = explode(',', $methodPragram);
-
         foreach ($pragrams as $pragram) {
             if ($pragram == "vin") {
                 $vin = MethodFunctionController::getvin();
@@ -57,10 +56,7 @@ class MethodController extends MethodFunctionController
             }
 
         }
-        $request_method=$request->method();
-        $url=$request->getBaseUrl().$request->getRequestUri();
-
-        MethodFunctionController::set_request_log("request",$method_id,$method_name,$url,json_encode($data),$request_method,$response);
+        MethodFunctionController::set_request_log("request",$method_id,$method_name,$url,$data,$request_method,$response);
 
         return response()->json(json_decode($response, true));
 
