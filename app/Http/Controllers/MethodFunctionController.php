@@ -39,6 +39,7 @@ class MethodFunctionController extends Controller
 
     public static function getmethod_id($data, $uri)
     {
+        $data = json_encode($data);
         $methodRes = MockProject::select(
             'mock_project.id',
             'mock_project_method.project_id',
@@ -53,6 +54,7 @@ class MethodFunctionController extends Controller
         foreach ($methodRes as $methodRe) {
             $rule = $methodRe->rule;
             eval($rule);
+            dd($value);
         }
     }
 
