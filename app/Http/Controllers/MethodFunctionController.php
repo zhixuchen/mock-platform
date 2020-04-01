@@ -12,8 +12,62 @@ use App\Models\MockProject;
 class MethodFunctionController extends Controller
 {
 
-    public static function method_request($method_id,$data,$error_result){
+    public static function  method_callback($project,$platform,$env,$status,$businessno)
+    {
 
+//        dd($url);
+        $callbackRes = MockProject::select(
+            'mock_callback.pragram',
+            'mock_callback.project_id',
+            'mock_callback.request_uri',
+            'mock_callback.id',
+            'mock_callback.name',
+            'mock_callback.status',
+            'mock_callback.request_body'
+        )->leftJoin('mock_callback', 'mock_project.id', 'mock_callback.project_id')
+            ->where('mock_project.project', $project)
+            ->get();
+        foreach ($callbackRes as $callback) {
+            if ($status == $callback->status) {
+                $data = $callback->request_body;
+                $pragrams = explode(',', $callback->pragram);
+                foreach ($pragrams as $pragram) {
+                    if ($pragram == "OrderNum") {
+                        $OrderNum = $businessno;
+                        $data = str_replace("{{OrderNum}}", $OrderNum, $data);
+                    } elseif ($pragram == "Sign") {
+                        $Sign = get_pragram::getSign($data, $businessno, $status);
+                        $data = str_replace("{{Sign}}", $Sign, $data);
+                    } elseif ($pragram == "businessno") {
+                        $data = str_replace("{{businessno}}", $businessno, $data);
+                    } elseif ($pragram == "orderNo") {
+                        $data = str_replace("{{orderNo}}", $businessno, $data);
+                    } elseif ($pragram == "ontractUniqueId") {
+                        $data = str_replace("{{ontractUniqueId}}", $businessno, $data);
+
+                    }
+                }
+
+                $callback_id = $callback->id;
+                $callback_name = $callback->name;
+                $uri = $callback->request_uri;
+                break;
+            }
+        }
+        $url = MethodFunctionController::get_url($platform, $env);
+        if ($project=="renbao"){
+            $url=$url.$uri;
+            MethodFunctionController::encryption($url,$data,$callback_id,$callback_name);}
+        elseif($project=="jingzhengu" or $project=="efq" or $project=="zhongjin"){
+            $response=MethodFunctionController::post($url,$data,$uri);
+            MethodFunctionController::set_request_log("callback",$callback_id,$callback_name,$url.$uri,$data,"POST",$response);
+            if ($project=="efq"){
+                $url="http://callback-beta.saasyc.com/time.php?name=".$env;
+                $response=MethodFunctionController::get($url);
+                MethodFunctionController::set_request_log("callback",0,"定时回调",$url,"","GET",$response);
+            }}
+    }
+    public static function method_request($method_id,$data,$error_result){
         $methodRes = MockProjectMethod::where('id', $method_id)->first();
         $response = $methodRes->result ?? $error_result;
         $methodPragram = $methodRes->pragram ?? '';
@@ -25,26 +79,18 @@ class MethodFunctionController extends Controller
             } elseif ($pragram == "tongdun_id") {
                 $tongdun_id = MethodFunctionController::gettongdun_id();
                 $response = str_replace("{{tongdun_id}}", $tongdun_id, $response);
-
             } elseif ($pragram == "creatbusinessno") {
                 $businessno = MethodFunctionController::getcreatbusinessno();
                 $response = str_replace("{{businessno}}", $businessno, $response);
-
             } elseif ($pragram == "businessno") {
-
                 $businessno = MethodFunctionController::getbusinessno($data);
                 $response = str_replace("{{businessno}}", $businessno, $response);
-
             } elseif ($pragram == "estageOrderNo") {
                 $estageOrderNo = MethodFunctionController::getestageOrderNo();
                 $response = str_replace("{{estageOrderNo}}", $estageOrderNo, $response);
-
-
             } elseif ($pragram == "orderNo") {
                 $orderNo = MethodFunctionController::getorderNo($data);
                 $response = str_replace("{{orderNo}}", $orderNo, $response);
-
-
             }
 
         }
@@ -238,5 +284,102 @@ class MethodFunctionController extends Controller
         $url = "http://" . $env . "-" . $platform . "-docker-" . $env . ".beta.saasyc.com";
         return $url;
 
+    }
+
+    public static function get($url){
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        return $response;
+
+
+    }
+
+    public static function post($url,$data, $uri){
+
+        $url = $url . $uri;
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 5,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => array(
+                "Content-Type: application/json"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+//            echo $response;
+            return $response;
+        }
+    }
+
+    public static function encryption($url,$data,$method_id,$method_name){
+        $AES_KEY = '4964cbbcbd7511e9';
+        $MD5_KEY = '339c989fbd7511e89d0700155d99c30b';
+        $agentcode = 'LR201909';
+        $projectcode = 'UBDXLR00HX1909A';
+        $timestamp = time() . "000";
+        $nonce = '12345678';
+        $str_signature = "agentcode=$agentcode&projectcode=$projectcode&timestamp=$timestamp&nonce=$nonce&data=$data&key=$MD5_KEY";
+        $signature = md5($str_signature);
+        $aes_str = MethodFunctionController::encrypt($data, $AES_KEY);
+        $base64_data = base64_encode($aes_str);
+        $uri = "agentcode=$agentcode&projectcode=$projectcode&timestamp=$timestamp&nonce=$nonce&signature=$signature";
+        $response=MethodFunctionController::post($url,$base64_data, $uri);
+        MethodFunctionController::set_request_log("callback",$method_id,$method_name,$url.$uri,$data,"POST",$response);
+    }
+    /**
+     *
+     * @param string $string 需要加密的字符串
+     * @param string $key 密钥
+     * @return string
+     */
+    public static function encrypt($string, $key)
+    {
+
+        // openssl_encrypt 加密不同Mcrypt，对秘钥长度要求，超出16加密结果不变
+        $data = openssl_encrypt($string, 'AES-128-ECB', $key, OPENSSL_RAW_DATA);
+
+        return $data;
+    }
+
+
+    /**
+     * @param string $string 需要解密的字符串
+     * @param string $key 密钥
+     * @return string
+     */
+    public static function decrypt($string, $key)
+    {
+        $decrypted = openssl_decrypt($string, 'AES-128-ECB', $key, OPENSSL_RAW_DATA);
+
+        return $decrypted;
     }
 }
