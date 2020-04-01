@@ -11,7 +11,47 @@ use App\Models\MockProject;
 
 class MethodFunctionController extends Controller
 {
-    function set_request_log($type,$method_id,$name,$request_url,$request_body,$request_method,$response){
+
+    public static function method_request($method_id,$data,$error_result){
+
+        $methodRes = MockProjectMethod::where('id', $method_id)->first();
+        $response = $methodRes->result ?? $error_result;
+        $methodPragram = $methodRes->pragram ?? '';
+        $pragrams = explode(',', $methodPragram);
+        foreach ($pragrams as $pragram) {
+            if ($pragram == "vin") {
+                $vin = MethodFunctionController::getvin();
+                $response = str_replace("{{vin}}", $vin, $response);
+            } elseif ($pragram == "tongdun_id") {
+                $tongdun_id = MethodFunctionController::gettongdun_id();
+                $response = str_replace("{{tongdun_id}}", $tongdun_id, $response);
+
+            } elseif ($pragram == "creatbusinessno") {
+                $businessno = MethodFunctionController::getcreatbusinessno();
+                $response = str_replace("{{businessno}}", $businessno, $response);
+
+            } elseif ($pragram == "businessno") {
+
+                $businessno = MethodFunctionController::getbusinessno($data);
+                $response = str_replace("{{businessno}}", $businessno, $response);
+
+            } elseif ($pragram == "estageOrderNo") {
+                $estageOrderNo = MethodFunctionController::getestageOrderNo();
+                $response = str_replace("{{estageOrderNo}}", $estageOrderNo, $response);
+
+
+            } elseif ($pragram == "orderNo") {
+                $orderNo = MethodFunctionController::getorderNo($data);
+                $response = str_replace("{{orderNo}}", $orderNo, $response);
+
+
+            }
+
+        }
+        return $response;
+    }
+
+    public static function set_request_log($type,$method_id,$name,$request_url,$request_body,$request_method,$response){
         $creat_time=date('Y-m-d h:i:s', time());
         $log=array(
             "id"=>"",
