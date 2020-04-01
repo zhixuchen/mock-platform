@@ -42,10 +42,8 @@ class MethodFunctionController extends Controller
                         $data = str_replace("{{orderNo}}", $businessno, $data);
                     } elseif ($pragram == "ontractUniqueId") {
                         $data = str_replace("{{ontractUniqueId}}", $businessno, $data);
-
                     }
                 }
-
                 $callback_id = $callback->id;
                 $callback_name = $callback->name;
                 $uri = $callback->request_uri;
@@ -60,10 +58,12 @@ class MethodFunctionController extends Controller
             $response=MethodFunctionController::post($url,$data,$uri);
             MethodFunctionController::set_request_log("callback",$callback_id,$callback_name,$url.$uri,$data,"POST",$response);
             if ($project=="efq"){
-//                dd($project);
-                $time_response=MethodFunctionController::exe_time($env);
+//                $time_response=MethodFunctionController::exe_time($env);
+                $url="http://callback-beta.saasyc.com/time.php?name=".$env;
+                $time_response=MethodFunctionController::get($url);
                 MethodFunctionController::set_request_log("callback",0,"定时回调",$url,"","GET",$time_response);
-            }}
+            }
+        }
         return $response;
     }
     public static function method_request($method_id,$data,$error_result){
@@ -382,19 +382,27 @@ class MethodFunctionController extends Controller
         return $decrypted;
     }
 
-    public static function exe_time($env){
-        $command1="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:DealICBCCallback";
-        $command2="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:AccordICBCCallbackAffectTradeCommand";
-        $command3="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:DealNotifyTradeCallbackInfoToThirdClientCommand";
+    public static function exe_time($env){##不知道什么原因执行成功了，但是没效果
+//        $command1="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:DealICBCCallback";
+//        $command2="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:AccordICBCCallbackAffectTradeCommand";
+//        $command3="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:DealNotifyTradeCallbackInfoToThirdClientCommand";
         $command4="/www/server/php/72/bin/php /www/code/saasyc/api/".$env."/artisan yiche:DealGenerateCompressedZip";
         $command5="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan overdue:deadline";
         $command6="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan schedule:run";
-        exec($command1);#对E分期回调进行解析
-        exec($command2);#对E分期解析后的数据推送给yiche-api
-        exec($command3);#对E分期解析后的数据推送给yiche-open
+
+//        exec($command1,$log,$status);#对E分期回调进行解析
+
+
+//        exec($command2,$log,$status);#对E分期解析后的数据推送给yiche-api
+
+//        exec($command3,$log,$status);#对E分期解析后的数据推送给yiche-open
+
 //exec($command4);#对下载打包
 //exec($command5);#贷后定时处理件
-        exec($command6);
+        system($command6,$status);
+        dd($status);
+
+
         $result=array(
             "code"=>0,
             "msg"=>"success",
