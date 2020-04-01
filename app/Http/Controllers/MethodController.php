@@ -15,13 +15,13 @@ class MethodController extends MethodFunctionController
         $uri = '/' . trim($request->uri, '/');
         $project=$request->get("project");
         $platform=$request->get("platform");
-            $env=$request->get("env");
+        $env=$request->get("env");
         $status=$request->get("status");
         $businessno=$request->get("businessno");
 
         if(strpos($uri,"callback")){
-//            dd($project);
-            MethodFunctionController::method_callback($project,$platform,$env,$status,$businessno);
+
+            $response=MethodFunctionController::method_callback($project,$platform,$env,$status,$businessno);
 
         }else{
             $request_uri = MethodFunctionController::getmethod_uri($uri);
@@ -34,9 +34,9 @@ class MethodController extends MethodFunctionController
             $method_id=$getmethod["method_id"];
             $response=MethodFunctionController::method_request($method_id,$data,$error_result);
             MethodFunctionController::set_request_log("request",$method_id,$method_name,$url,$data,$request_method,$response);
-            return response()->json(json_decode($response, true));
-        }
 
+        }
+        return response()->json(json_decode($response, true));
 
 
     }

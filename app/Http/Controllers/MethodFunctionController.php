@@ -14,8 +14,6 @@ class MethodFunctionController extends Controller
 
     public static function  method_callback($project,$platform,$env,$status,$businessno)
     {
-
-//        dd($url);
         $callbackRes = MockProject::select(
             'mock_callback.pragram',
             'mock_callback.project_id',
@@ -36,7 +34,7 @@ class MethodFunctionController extends Controller
                         $OrderNum = $businessno;
                         $data = str_replace("{{OrderNum}}", $OrderNum, $data);
                     } elseif ($pragram == "Sign") {
-                        $Sign = get_pragram::getSign($data, $businessno, $status);
+                        $Sign = MethodFunctionController::getSign($data, $businessno, $status);
                         $data = str_replace("{{Sign}}", $Sign, $data);
                     } elseif ($pragram == "businessno") {
                         $data = str_replace("{{businessno}}", $businessno, $data);
@@ -57,15 +55,15 @@ class MethodFunctionController extends Controller
         $url = MethodFunctionController::get_url($platform, $env);
         if ($project=="renbao"){
             $url=$url.$uri;
-            MethodFunctionController::encryption($url,$data,$callback_id,$callback_name);}
+            $response=MethodFunctionController::encryption($url,$data,$callback_id,$callback_name);}
         elseif($project=="jingzhengu" or $project=="efq" or $project=="zhongjin"){
             $response=MethodFunctionController::post($url,$data,$uri);
             MethodFunctionController::set_request_log("callback",$callback_id,$callback_name,$url.$uri,$data,"POST",$response);
             if ($project=="efq"){
-                $url="http://callback-beta.saasyc.com/time.php?name=".$env;
-                $response=MethodFunctionController::get($url);
-                MethodFunctionController::set_request_log("callback",0,"定时回调",$url,"","GET",$response);
+                $time_response=exe_time($env);
+                MethodFunctionController::set_request_log("callback",0,"定时回调",$url,"","GET",$time_response);
             }}
+        return $response;
     }
     public static function method_request($method_id,$data,$error_result){
         $methodRes = MockProjectMethod::where('id', $method_id)->first();
@@ -335,7 +333,6 @@ class MethodFunctionController extends Controller
         if ($err) {
             echo "cURL Error #:" . $err;
         } else {
-//            echo $response;
             return $response;
         }
     }
@@ -354,6 +351,7 @@ class MethodFunctionController extends Controller
         $uri = "agentcode=$agentcode&projectcode=$projectcode&timestamp=$timestamp&nonce=$nonce&signature=$signature";
         $response=MethodFunctionController::post($url,$base64_data, $uri);
         MethodFunctionController::set_request_log("callback",$method_id,$method_name,$url.$uri,$data,"POST",$response);
+        return $response;
     }
     /**
      *
@@ -381,5 +379,35 @@ class MethodFunctionController extends Controller
         $decrypted = openssl_decrypt($string, 'AES-128-ECB', $key, OPENSSL_RAW_DATA);
 
         return $decrypted;
+    }
+
+    public static function exe_time($env){
+        $command1="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:DealICBCCallback";
+        $command2="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:AccordICBCCallbackAffectTradeCommand";
+        $command3="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:DealNotifyTradeCallbackInfoToThirdClientCommand";
+        $command4="/www/server/php/72/bin/php /www/code/saasyc/api/".$env."/artisan yiche:DealGenerateCompressedZip";
+        $command5="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan overdue:deadline";
+        $command6="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan schedule:run";
+        exec($command1);#对E分期回调进行解析
+        exec($command2);#对E分期解析后的数据推送给yiche-api
+        exec($command3);#对E分期解析后的数据推送给yiche-open
+//exec($command4);#对下载打包
+//exec($command5);#贷后定时处理件
+        exec($command6);
+        $result=array(
+            "code"=>0,
+            "msg"=>"success",
+            "platform"=>$env,
+            "command1"=>$command1,
+            "command2"=>$command2,
+            "command3"=>$command3,
+            "command6"=>$command6,
+//    "command4"=>$command4,
+//    "command5"=>$command5,
+        );
+        $result=json_encode($result);
+        return $result;
+
+
     }
 }
