@@ -12,49 +12,56 @@ class MethodController extends MethodFunctionController
 {
     public function methodRes(Request $request)
     {
-
+        header('Content-Type:application/json; charset=UTF-8');
         $uri = '/' . trim($request->uri, '/');
         $request_uri = MethodFunctionController::getmethod_uri($uri);
         $data = $request->all();
-        MethodFunctionController::getmethod_id($data,$request_uri);
-        $methodRes = MockProjectMethod::where('uri', $request_uri)->first();
+        $getmethod=MethodFunctionController::getmethod_id($data,$request_uri);
+        $method_id=$getmethod["method_id"];
+        $method_name=$getmethod["name"];
+//        dd($method_id);
+        $methodRes = MockProjectMethod::where('id', $method_id)->first();
+
         $response = $methodRes->result ?? '';
+
         $methodPragram = $methodRes->pragram ?? '';
         $pragrams = explode(',', $methodPragram);
+
         foreach ($pragrams as $pragram) {
             if ($pragram == "vin") {
                 $vin = MethodFunctionController::getvin();
-                $json_result = str_replace("{{vin}}", $vin, $response);
+                $response = str_replace("{{vin}}", $vin, $response);
             } elseif ($pragram == "tongdun_id") {
                 $tongdun_id = MethodFunctionController::gettongdun_id();
-                $json_result = str_replace("{{tongdun_id}}", $tongdun_id, $response);
+                $response = str_replace("{{tongdun_id}}", $tongdun_id, $response);
 
             } elseif ($pragram == "creatbusinessno") {
                 $businessno = MethodFunctionController::getcreatbusinessno();
-                $json_result = str_replace("{{businessno}}", $businessno, $response);
+                $response = str_replace("{{businessno}}", $businessno, $response);
 
             } elseif ($pragram == "businessno") {
 
                 $businessno = MethodFunctionController::getbusinessno($data);
-                $json_result = str_replace("{{businessno}}", $businessno, $response);
+                $response = str_replace("{{businessno}}", $businessno, $response);
 
             } elseif ($pragram == "estageOrderNo") {
                 $estageOrderNo = MethodFunctionController::getestageOrderNo();
-                $json_result = str_replace("{{estageOrderNo}}", $estageOrderNo, $response);
+                $response = str_replace("{{estageOrderNo}}", $estageOrderNo, $response);
 
 
             } elseif ($pragram == "orderNo") {
                 $orderNo = MethodFunctionController::getorderNo($data);
-                $json_result = str_replace("{{orderNo}}", $orderNo, $response);
+                $response = str_replace("{{orderNo}}", $orderNo, $response);
 
 
             }
 
         }
+        $request_method=$request->method();
+        $url=$request->getBaseUrl().$request->getRequestUri();
 
-
-
-        return $json_result;
+        MethodFunctionController::set_request_log("request",$method_id,$method_name,$url,json_encode($data),$request_method,$response);
+        return $response;
 
     }
 }

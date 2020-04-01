@@ -5,11 +5,35 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\MockProjectMethod;
+use App\Models\MockRequestLog;
 use Illuminate\Http\Request;
 use App\Models\MockProject;
 
 class MethodFunctionController extends Controller
 {
+    function set_request_log($type,$method_id,$name,$request_url,$request_body,$request_method,$response){
+        $creat_time=date('Y-m-d h:i:s', time());
+        $log=array(
+            "id"=>"",
+            "type"=>$type,
+            "method_id"=>$method_id,
+            "name"=>$name,
+            "request_url"=>$request_url,
+            "request_body"=>$request_body,
+            "request_method"=>$request_method,
+            "response"=>$response,
+            "creat_time"=>$creat_time
+        );
+        $result=MockRequestLog::insert($log);
+//        dd($result);
+        if ($result != true) {
+            echo "新记录插入失败";
+        }
+
+
+
+    }
+
     public static function getmethod_uri($uri)
     {
         $methodRes = MockProjectMethod::get();
@@ -21,25 +45,11 @@ class MethodFunctionController extends Controller
             }
 
         }
-//        $conn=mysql::mysql_connect();
-//        $result = $conn->query($sql);
-//        if ($result->num_rows > 0) {
-//
-//            while($row = $result->fetch_assoc()) {
-//
-//                if(strpos($uri,$row["uri"]) or strpos($uri,$row["uri"])===0){
-//                    $method_uri=$row["uri"];
-//                    return $method_uri;
-//
-//                }
-//            }}
-
-//        mysqli_close($conn);
     }
 
     public static function getmethod_id($data, $uri)
     {
-        $data = json_encode($data);
+
         $methodRes = MockProject::select(
             'mock_project.id',
             'mock_project_method.project_id',
@@ -50,12 +60,33 @@ class MethodFunctionController extends Controller
         )->leftJoin('mock_project_method', 'mock_project.id', 'mock_project_method.project_id')
             ->where('mock_project_method.uri', $uri)
             ->get();
-
+        $data = json_encode($data);#不要删除，下面的$rule 规则里需要用到
         foreach ($methodRes as $methodRe) {
             $rule = $methodRe->rule;
+            $route = $methodRe->route;
             eval($rule);
-            dd($value);
+            if ($route == $value or strlen($route) === 0) {##$value为执行$rule时声明的变量
+                $method_id = $methodRe->id;
+                $name = $methodRe->name;
+                $result = array(
+                    "method_id" => $method_id,
+                    "name" => $name
+                );
+
+                return $result;
+            } else {
+                $result = array(
+                    "method_id" => 0,
+                    "name" => "未找到方法"
+                );
+
+
+
+            }
+
+
         }
+        return $result;
     }
 
 
