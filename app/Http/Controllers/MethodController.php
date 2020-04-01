@@ -15,8 +15,8 @@ class MethodController extends MethodFunctionController
 
         $uri = '/' . trim($request->uri, '/');
         $request_uri = MethodFunctionController::getmethod_uri($uri);
-        MethodFunctionController::getmethod_id($request_uri);
         $data = $request->all();
+        MethodFunctionController::getmethod_id($data,$request_uri);
         $methodRes = MockProjectMethod::where('uri', $request_uri)->first();
         $response = $methodRes->result ?? '';
         $methodPragram = $methodRes->pragram ?? '';
@@ -53,17 +53,7 @@ class MethodController extends MethodFunctionController
         }
 
 
-        $res = MockProject::select(
-            'mock_project.id',
-            'mock_project_method.project_id',
-            'mock_project.rule',
-            'mock_project_method.id',
-            'mock_project_method.name',
-            'mock_project_method.route'
-        )->leftJoin('mock_project_method', 'mock_project.id', 'mock_project_method.project_id')
-            ->where('mock_project_method.uri', $uri)
-            ->get()->toArray();
-        dd($res);
+
         return $json_result;
 
     }

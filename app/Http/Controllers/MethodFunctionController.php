@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\MockProjectMethod;
 use Illuminate\Http\Request;
+use App\Models\MockProject;
 
 class MethodFunctionController extends Controller
 {
@@ -35,14 +36,28 @@ class MethodFunctionController extends Controller
 //        mysqli_close($conn);
     }
 
-    public static function getmethod_id($uri)
+    public static function getmethod_id($data,$uri)
     {
-        $method_uri = MethodFunctionController::getmethod_uri($uri);
-        $methodRes = MockProjectMethod::where('uri', $method_uri);
+        $data=json_decode(json_encode($data));
+        $methodRes = MockProject::select(
+            'mock_project.id',
+            'mock_project_method.project_id',
+            'mock_project.rule',
+            'mock_project_method.id',
+            'mock_project_method.name',
+            'mock_project_method.route'
+        )->leftJoin('mock_project_method', 'mock_project.id', 'mock_project_method.project_id')
+            ->where('mock_project_method.uri', $uri)
+            ->get();
+
         foreach (json_decode($methodRes) as $methodRe) {
             $rule = $methodRe->rule;
+
+//            $value=$data->busiCode;
+            echo $rule;
             eval($rule);
-            var_dump($value);
+            echo $value;
+//
         }
     }
 
