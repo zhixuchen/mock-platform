@@ -14,6 +14,7 @@ class MethodController extends  MethodFunctionController
 
         $uri = '/' . trim($request->uri, '/');
         $request_uri= MethodFunctionController::getmethod_uri($uri);
+        MethodFunctionController::getmethod_id($request_uri);
         $data=$request->all();
         $methodRes = MockProjectMethod::where('uri', $request_uri)->first();
         $response=$methodRes->result ?? '';

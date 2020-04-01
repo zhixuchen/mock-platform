@@ -35,6 +35,18 @@ class MethodFunctionController extends Controller
 //        mysqli_close($conn);
     }
 
+    public static function getmethod_id($uri)
+    {
+        $method_uri = MethodFunctionController::getmethod_uri($uri);
+        $methodRes = MockProjectMethod::where('uri', $method_uri);
+        foreach (json_decode($methodRes) as $methodRe) {
+            $rule = $methodRe->rule;
+            eval($rule);
+            var_dump($value);
+        }
+    }
+
+
     public static function getvin(){
         $chars = array(
             "A", "B", "C", "D", "E", "F", "G",
