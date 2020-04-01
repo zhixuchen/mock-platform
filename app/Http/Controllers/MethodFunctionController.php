@@ -60,7 +60,8 @@ class MethodFunctionController extends Controller
             $response=MethodFunctionController::post($url,$data,$uri);
             MethodFunctionController::set_request_log("callback",$callback_id,$callback_name,$url.$uri,$data,"POST",$response);
             if ($project=="efq"){
-                $time_response=exe_time($env);
+//                dd($project);
+                $time_response=MethodFunctionController::exe_time($env);
                 MethodFunctionController::set_request_log("callback",0,"定时回调",$url,"","GET",$time_response);
             }}
         return $response;
