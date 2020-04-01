@@ -9,6 +9,32 @@ use Illuminate\Http\Request;
 
 class MethodFunctionController extends Controller
 {
+    public static function getmethod_uri($uri){
+        $methodRes = MockProjectMethod::get();
+        foreach  (json_decode($methodRes) as $value){
+            $method_uri=$value->uri;
+            if(strpos($uri,$method_uri) or strpos($uri,$method_uri)===0) {
+                $method_uri = $method_uri;
+                return $method_uri;
+            }
+
+        }
+//        $conn=mysql::mysql_connect();
+//        $result = $conn->query($sql);
+//        if ($result->num_rows > 0) {
+//
+//            while($row = $result->fetch_assoc()) {
+//
+//                if(strpos($uri,$row["uri"]) or strpos($uri,$row["uri"])===0){
+//                    $method_uri=$row["uri"];
+//                    return $method_uri;
+//
+//                }
+//            }}
+
+//        mysqli_close($conn);
+    }
+
     public static function getvin(){
         $chars = array(
             "A", "B", "C", "D", "E", "F", "G",

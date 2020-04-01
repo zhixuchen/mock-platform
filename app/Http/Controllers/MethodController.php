@@ -11,11 +11,11 @@ class MethodController extends  MethodFunctionController
 {
     public function methodRes(Request $request)
     {
+
         $uri = '/' . trim($request->uri, '/');
-        $all=$request->all();
-        dd($all);
-        $methodRes = MockProjectMethod::where('uri', $uri)->first();
-//        MockProjectMethod::where('pragram', $pragram)->first();
+        $request_uri= MethodFunctionController::getmethod_uri($uri);
+        $data=$request->all();
+        $methodRes = MockProjectMethod::where('uri', $request_uri)->first();
         $response=$methodRes->result ?? '';
         $methodPragram=$methodRes->pragram ?? '';
         $pragrams=explode(',',$methodPragram);
