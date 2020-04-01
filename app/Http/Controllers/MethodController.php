@@ -4,23 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\MethodFunctionController;
 use App\Http\Controllers\Controller;
+use App\Models\MockProject;
 use App\Models\MockProjectMethod;
 use Illuminate\Http\Request;
 
-class MethodController extends  MethodFunctionController
+class MethodController extends MethodFunctionController
 {
     public function methodRes(Request $request)
     {
 
         $uri = '/' . trim($request->uri, '/');
-        $request_uri= MethodFunctionController::getmethod_uri($uri);
+        $request_uri = MethodFunctionController::getmethod_uri($uri);
         MethodFunctionController::getmethod_id($request_uri);
-        $data=$request->all();
+        $data = $request->all();
         $methodRes = MockProjectMethod::where('uri', $request_uri)->first();
-        $response=$methodRes->result ?? '';
-        $methodPragram=$methodRes->pragram ?? '';
-        $pragrams=explode(',',$methodPragram);
-        foreach($pragrams as $pragram) {
+        $response = $methodRes->result ?? '';
+        $methodPragram = $methodRes->pragram ?? '';
+        $pragrams = explode(',', $methodPragram);
+        foreach ($pragrams as $pragram) {
             if ($pragram == "vin") {
                 $vin = MethodFunctionController::getvin();
                 $json_result = str_replace("{{vin}}", $vin, $response);
@@ -50,7 +51,20 @@ class MethodController extends  MethodFunctionController
             }
 
         }
-            return $json_result;
+
+
+        $res = MockProject::select(
+            'mock_project.id',
+            'mock_project_method.project_id',
+            'mock_project.rule',
+            'mock_project_method.id',
+            'mock_project_method.name',
+            'mock_project_method.route'
+        )->leftJoin('mock_project_method', 'mock_project.id', 'mock_project_method.project_id')
+            ->where('mock_project_method.uri', $uri)
+            ->get()->toArray();
+        dd($res);
+        return $json_result;
 
     }
 }
