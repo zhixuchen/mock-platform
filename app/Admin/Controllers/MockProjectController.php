@@ -50,9 +50,9 @@ class MockProjectController extends AdminController
         $show = new Show(MockProject::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('project', __('Project'));
-        $show->field('name', __('Name'));
-        $show->field('rule', __('Rule'));
+        $show->field('project','项目');
+        $show->field('name', '名称');
+        $show->field('rule', '规则');
 
         return $show;
     }
@@ -66,9 +66,9 @@ class MockProjectController extends AdminController
     {
         $form = new Form(new MockProject());
 
-        $form->text('project', __('Project'));
-        $form->text('name', __('Name'));
-        $form->text('rule', __('Rule'));
+        $form->text('project','项目');
+        $form->text('name','名称');
+        $form->text('rule','规则');
 
         return $form;
     }

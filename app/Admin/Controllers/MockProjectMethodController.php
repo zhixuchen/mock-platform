@@ -15,7 +15,7 @@ class MockProjectMethodController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\MockProjectMethod';
+    protected $title = 'Mock请求方法管理';
 
     /**
      * Make a grid builder.
@@ -32,7 +32,7 @@ class MockProjectMethodController extends AdminController
         $grid->column('uri', '接口地址');
         $grid->column('route', '路由');
         $grid->column('type', 'mock类型（默认1）');
-//        $grid->column('result', 'mock返回结果');
+        $grid->column('result', 'mock返回结果')->hide();
         $grid->column('pragram', '可变参数');
 
 
@@ -70,13 +70,13 @@ class MockProjectMethodController extends AdminController
     {
         $form = new Form(new MockProjectMethod());
 
-        $form->number('project_id', __('Project id'));
-        $form->text('name', __('Name'));
-        $form->text('uri', __('Uri'));
-        $form->text('route', __('Route'));
-        $form->number('type', __('Type'))->default(1);
-        $form->textarea('result', __('Result'));
-        $form->text('pragram', __('Pragram'));
+        $form->number('project_id','项目id');
+        $form->text('name', '项目名称');
+        $form->text('uri', '接口地址');
+        $form->text('route', '路由');
+        $form->number('type', 'mock类型（默认1）')->default(1);
+        $form->textarea('result','mock返回结果');
+        $form->text('pragram', '可变参数');
 
         return $form;
     }

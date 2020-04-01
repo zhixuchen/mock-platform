@@ -15,7 +15,7 @@ class MockCallbackController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\MockCallback';
+    protected $title = 'Mock回调管理';
 
     /**
      * Make a grid builder.
@@ -27,12 +27,12 @@ class MockCallbackController extends AdminController
         $grid = new Grid(new MockCallback());
 
         $grid->column('id', __('Id'));
-        $grid->column('project_id', __('Project id'));
-        $grid->column('name', __('Name'));
-        $grid->column('request_uri', __('Request uri'));
-        $grid->column('request_body', __('Request body'));
-        $grid->column('pragram', __('Pragram'));
-        $grid->column('status', __('Status'));
+        $grid->column('project_id', '项目id');
+        $grid->column('name', '名称');
+        $grid->column('request_uri', '回调接口地址');
+        $grid->column('request_body', '请求BODY')->hide();
+        $grid->column('pragram', '传参');
+        $grid->column('status', '状态');
 
         return $grid;
     }
@@ -48,12 +48,12 @@ class MockCallbackController extends AdminController
         $show = new Show(MockCallback::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('project_id', __('Project id'));
-        $show->field('name', __('Name'));
-        $show->field('request_uri', __('Request uri'));
-        $show->field('request_body', __('Request body'));
-        $show->field('pragram', __('Pragram'));
-        $show->field('status', __('Status'));
+        $show->field('project_id','项目id');
+        $show->field('name', '名称');
+        $show->field('request_uri','回调接口地址');
+        $show->field('request_body', '请求BODY');
+        $show->field('pragram', '传参');
+        $show->field('status', '状态');
 
         return $show;
     }
@@ -67,12 +67,12 @@ class MockCallbackController extends AdminController
     {
         $form = new Form(new MockCallback());
 
-        $form->number('project_id', __('Project id'));
-        $form->text('name', __('Name'));
-        $form->text('request_uri', __('Request uri'));
-        $form->textarea('request_body', __('Request body'));
-        $form->text('pragram', __('Pragram'));
-        $form->text('status', __('Status'));
+        $form->number('project_id', '项目id');
+        $form->text('name', '名称');
+        $form->text('request_uri','回调接口地址');
+        $form->textarea('request_body','请求BODY');
+        $form->text('pragram', '传参');
+        $form->text('status', '状态');
 
         return $form;
     }
