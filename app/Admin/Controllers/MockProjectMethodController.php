@@ -26,14 +26,14 @@ class MockProjectMethodController extends AdminController
     {
         $grid = new Grid(new MockProjectMethod());
 
-        $grid->column('id', __('Id'))->width(50);
-        $grid->column('project_id','项目id')->width(70);
-        $grid->column('name', '项目名称')->width(200);
-        $grid->column('uri', '接口地址')->width(200);
-        $grid->column('route', '路由')->width(100);
-        $grid->column('type', 'mock类型（默认1）')->width(200);
-        $grid->column('result', 'mock返回结果')->hide()->width(200);
-        $grid->column('pragram', '可变参数')->width(100);
+        $grid->column('id', __('Id'));
+        $grid->column('project_id','项目id');
+        $grid->column('name', '项目名称');
+        $grid->column('uri', '接口地址');
+        $grid->column('route', '路由');
+        $grid->column('type', 'mock类型（默认1）');
+//        $grid->column('result', 'mock返回结果');
+        $grid->column('pragram', '可变参数');
 
 
         return $grid;
