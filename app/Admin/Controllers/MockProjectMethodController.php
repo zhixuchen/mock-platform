@@ -35,6 +35,7 @@ class MockProjectMethodController extends AdminController
         $grid->column('result', 'mock返回结果')->hide()->width(200);
         $grid->column('pragram', '可变参数')->width(100);
 
+
         return $grid;
     }
 
