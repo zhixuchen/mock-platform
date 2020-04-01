@@ -56,6 +56,7 @@ class MethodFunctionController extends Controller
             $response=MethodFunctionController::encryption($url,$data,$callback_id,$callback_name);}
         elseif($project=="jingzhengu" or $project=="efq" or $project=="zhongjin"){
             $response=MethodFunctionController::post($url,$data,$uri);
+
             MethodFunctionController::set_request_log("callback",$callback_id,$callback_name,$url.$uri,$data,"POST",$response);
             if ($project=="efq"){
 //                $time_response=MethodFunctionController::exe_time($env);
@@ -64,6 +65,7 @@ class MethodFunctionController extends Controller
                 MethodFunctionController::set_request_log("callback",0,"定时回调",$url,"","GET",$time_response);
             }
         }
+
         return $response;
     }
     public static function method_request($method_id,$data,$error_result){

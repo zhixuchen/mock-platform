@@ -26,14 +26,14 @@ class MockProjectMethodController extends AdminController
     {
         $grid = new Grid(new MockProjectMethod());
 
-        $grid->column('id', __('Id'));
-        $grid->column('project_id', __('Project id'));
-        $grid->column('name', __('Name'));
-        $grid->column('uri', __('Uri'));
-        $grid->column('route', __('Route'));
-        $grid->column('type', __('Type'));
-        $grid->column('result', __('Result'));
-        $grid->column('pragram', __('Pragram'));
+        $grid->column('id', __('Id'))->width(50);
+        $grid->column('project_id','项目id')->width(70);
+        $grid->column('name', '项目名称')->width(200);
+        $grid->column('uri', '接口地址')->width(200);
+        $grid->column('route', '路由')->width(100);
+        $grid->column('type', 'mock类型（默认1）')->width(200);
+        $grid->column('result', 'mock返回结果')->hide()->width(200);
+        $grid->column('pragram', '可变参数')->width(100);
 
         return $grid;
     }
@@ -49,13 +49,13 @@ class MockProjectMethodController extends AdminController
         $show = new Show(MockProjectMethod::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('project_id', __('Project id'));
-        $show->field('name', __('Name'));
-        $show->field('uri', __('Uri'));
-        $show->field('route', __('Route'));
-        $show->field('type', __('Type'));
-        $show->field('result', __('Result'));
-        $show->field('pragram', __('Pragram'));
+        $show->field('project_id','项目id');
+        $show->field('name', '项目名称');
+        $show->field('uri','接口地址');
+        $show->field('route', '路由');
+        $show->field('type','mock类型（默认1）');
+        $show->field('result', 'mock返回结果');
+        $show->field('pragram', '可变参数');
 
         return $show;
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MockProject;
 use App\Models\MockProjectMethod;
 use Illuminate\Http\Request;
+use function PHPSTORM_META\type;
 
 class MethodController extends MethodFunctionController
 {
