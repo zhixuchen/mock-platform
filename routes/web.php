@@ -12,4 +12,4 @@
 */
 
 // 默认路由
-Route::get('/{uri}', 'MethodController@methodRes')->where('uri', '(.*)');
+Route::any('/{uri}', 'MethodController@methodRes')->where('uri', '(.*)');
