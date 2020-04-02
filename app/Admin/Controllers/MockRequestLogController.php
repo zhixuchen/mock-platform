@@ -34,7 +34,8 @@ class MockRequestLogController extends AdminController
             $filter->like('request_url', '请求URL');
             $filter->like('request_method', '请求方式');
         });
-        $grid->column('id', __('Id'));
+        $grid->model()->orderBy('id', 'desc');
+        $grid->column('id', __('Id'))->sortable();
         $grid->column('type', '请求类型');
         $grid->column('method_id', '请求关联id');
         $grid->column('name', '请求名称');
