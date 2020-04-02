@@ -13,7 +13,7 @@ class MethodController extends MethodFunctionController
 {
     public function methodRes(Request $request)
     {
-        $uri = '/' . trim($request->uri, '/');
+        $uri = '/' . trim($request->getRequestUri(), '/');
         $project=$request->get("project");
         $platform=$request->get("platform");
         $env=$request->get("env");
@@ -27,8 +27,8 @@ class MethodController extends MethodFunctionController
         }else{
             $request_uri = MethodFunctionController::getmethod_uri($uri);
             $request_method=$request->method();
-            $url="http://".$request->getHttpHost().'/'.$request->uri;
-            $data =json_encode( $request->all());
+            $url="http://".$request->getHttpHost().'/'.$request->getRequestUri();
+            $data =json_encode( $request->post());
             $getmethod=MethodFunctionController::getmethod_id($data,$request_uri);
             $method_name=$getmethod["name"];
             $error_result=json_encode(array("url"=>$url,"method"=>$request_method,"body"=>$data));

@@ -123,11 +123,14 @@ class MethodFunctionController extends Controller
 
     public static function getmethod_uri($uri)
     {
+
         $methodRes = MockProjectMethod::get();
         foreach (json_decode($methodRes) as $value) {
             $method_uri = $value->uri;
+
             if (strpos($uri, $method_uri) or strpos($uri, $method_uri) === 0) {
                 $method_uri = $method_uri;
+
                 return $method_uri;
             }
 
