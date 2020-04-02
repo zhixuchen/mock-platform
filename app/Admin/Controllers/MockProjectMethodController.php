@@ -24,11 +24,18 @@ class MockProjectMethodController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new MockProjectMethod());
 
+        $grid = new Grid(new MockProjectMethod());
+        $grid->filter(function(Grid\Filter $filter){
+            $filter->disableIdFilter();
+            $filter->like('project_id', '项目id');
+            $filter->like('name', '方法名称');
+            $filter->like('uri', '接口地址');
+            $filter->like('pragram', '可变参数');
+        });
         $grid->column('id', __('Id'));
         $grid->column('project_id','项目id');
-        $grid->column('name', '项目名称');
+        $grid->column('name', '方法名称');
         $grid->column('uri', '接口地址');
         $grid->column('route', '路由');
         $grid->column('type', 'mock类型（默认1）');
@@ -51,7 +58,7 @@ class MockProjectMethodController extends AdminController
 
         $show->field('id', __('Id'));
         $show->field('project_id','项目id');
-        $show->field('name', '项目名称');
+        $show->field('name', '方法名称');
         $show->field('uri','接口地址');
         $show->field('route', '路由');
         $show->field('type','mock类型（默认1）');
@@ -71,7 +78,7 @@ class MockProjectMethodController extends AdminController
         $form = new Form(new MockProjectMethod());
 
         $form->number('project_id','项目id');
-        $form->text('name', '项目名称');
+        $form->text('name', '方法名称');
         $form->text('uri', '接口地址');
         $form->text('route', '路由');
         $form->number('type', 'mock类型（默认1）')->default(1);

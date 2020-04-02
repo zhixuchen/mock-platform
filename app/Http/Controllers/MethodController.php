@@ -27,7 +27,7 @@ class MethodController extends MethodFunctionController
         }else{
             $request_uri = MethodFunctionController::getmethod_uri($uri);
             $request_method=$request->method();
-            $url="http://".$request->getHttpHost().'/'.$request->getRequestUri();
+            $url="http://".$request->getHttpHost().$request->getRequestUri();
             $data =json_encode( $request->post());
             $getmethod=MethodFunctionController::getmethod_id($data,$request_uri);
             $method_name=$getmethod["name"];

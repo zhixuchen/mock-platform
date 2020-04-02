@@ -25,10 +25,16 @@ class MockCallbackController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new MockCallback());
-
+        $grid->filter(function(Grid\Filter $filter){
+            $filter->disableIdFilter();
+            $filter->like('project_id', '项目id');
+            $filter->like('name', '回调名称');
+            $filter->like('request_uri', '回调接口地址');
+            $filter->like('status', '状态');
+        });
         $grid->column('id', __('Id'));
         $grid->column('project_id', '项目id');
-        $grid->column('name', '名称');
+        $grid->column('name', '回调名称');
         $grid->column('request_uri', '回调接口地址');
         $grid->column('request_body', '请求BODY')->hide();
         $grid->column('pragram', '传参');
@@ -49,7 +55,7 @@ class MockCallbackController extends AdminController
 
         $show->field('id', __('Id'));
         $show->field('project_id','项目id');
-        $show->field('name', '名称');
+        $show->field('name', '回调名称');
         $show->field('request_uri','回调接口地址');
         $show->field('request_body', '请求BODY');
         $show->field('pragram', '传参');
@@ -68,7 +74,7 @@ class MockCallbackController extends AdminController
         $form = new Form(new MockCallback());
 
         $form->number('project_id', '项目id');
-        $form->text('name', '名称');
+        $form->text('name', '回调名称');
         $form->text('request_uri','回调接口地址');
         $form->textarea('request_body','请求BODY');
         $form->text('pragram', '传参');

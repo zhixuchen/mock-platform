@@ -25,7 +25,14 @@ class MockRequestLogController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new MockRequestLog());
-
+        $grid->filter(function(Grid\Filter $filter){
+            $filter->disableIdFilter();
+            $filter->like('project_id', '项目id');
+            $filter->like('type', '请求类型');
+            $filter->like('method_id', '请求关联id');
+            $filter->like('request_url', '请求URL');
+            $filter->like('request_method', '请求方式');
+        });
         $grid->column('id', __('Id'));
         $grid->column('type', '请求类型');
         $grid->column('method_id', '请求关联id');
