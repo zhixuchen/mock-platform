@@ -74,27 +74,9 @@ class MethodFunctionController extends Controller
         $methodPragram = $methodRes->pragram ?? '';
         $pragrams = explode(',', $methodPragram);
         foreach ($pragrams as $pragram) {
-            if ($pragram == "vin") {
-                $function="get".$pragram;
-                $vin = MethodFunctionController::$function();
-                $response = str_replace("{{vin}}", $vin, $response);
-            } elseif ($pragram == "tongdun_id") {
-                $tongdun_id = MethodFunctionController::gettongdun_id();
-                $response = str_replace("{{tongdun_id}}", $tongdun_id, $response);
-            } elseif ($pragram == "creatbusinessno") {
-                $businessno = MethodFunctionController::getcreatbusinessno();
-                $response = str_replace("{{businessno}}", $businessno, $response);
-            } elseif ($pragram == "businessno") {
-                $businessno = MethodFunctionController::getbusinessno($data);
-                $response = str_replace("{{businessno}}", $businessno, $response);
-            } elseif ($pragram == "estageOrderNo") {
-                $estageOrderNo = MethodFunctionController::getestageOrderNo();
-                $response = str_replace("{{estageOrderNo}}", $estageOrderNo, $response);
-            } elseif ($pragram == "orderNo") {
-                $orderNo = MethodFunctionController::getorderNo($data);
-                $response = str_replace("{{orderNo}}", $orderNo, $response);
-            }
-
+            $function="get".$pragram;
+            $replace = MethodFunctionController::$function($data);
+            $response = str_replace("{{".$pragram."}}", $replace, $response);
         }
         return $response;
     }
@@ -189,7 +171,7 @@ class MethodFunctionController extends Controller
     }
 
 
-    public static function getvin()
+    public static function getvin($data)
     {
         $chars = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 
@@ -203,7 +185,7 @@ class MethodFunctionController extends Controller
         return $str;
     }
 
-    public static function gettongdun_id()
+    public static function gettongdun_id($data)
     {
         $time = time();
         $n = rand(0, 9);
@@ -211,7 +193,7 @@ class MethodFunctionController extends Controller
         return $id;
     }
 
-    public static function getcreatbusinessno()
+    public static function getcreatbusinessno($data)
     {
         $Businessno = "CL" . time() . "000";;
         return $Businessno;
@@ -224,7 +206,7 @@ class MethodFunctionController extends Controller
         return $Businessno;
     }
 
-    public static function getestageOrderNo()
+    public static function getestageOrderNo($data)
     {
         $estageOrderNo = 'test' . md5(time());
         return $estageOrderNo;
