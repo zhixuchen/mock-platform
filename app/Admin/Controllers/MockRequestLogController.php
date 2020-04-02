@@ -25,6 +25,7 @@ class MockRequestLogController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new MockRequestLog());
+        $grid->disableCreateButton();
         $grid->filter(function(Grid\Filter $filter){
             $filter->disableIdFilter();
             $filter->like('project_id', '项目id');
