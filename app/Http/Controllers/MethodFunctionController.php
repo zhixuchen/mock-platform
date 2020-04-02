@@ -75,7 +75,8 @@ class MethodFunctionController extends Controller
         $pragrams = explode(',', $methodPragram);
         foreach ($pragrams as $pragram) {
             if ($pragram == "vin") {
-                $vin = MethodFunctionController::getvin();
+                $function="get".$pragram;
+                $vin = MethodFunctionController::$function();
                 $response = str_replace("{{vin}}", $vin, $response);
             } elseif ($pragram == "tongdun_id") {
                 $tongdun_id = MethodFunctionController::gettongdun_id();
@@ -190,44 +191,7 @@ class MethodFunctionController extends Controller
 
     public static function getvin()
     {
-        $chars = array(
-            "A",
-            "B",
-            "C",
-            "D",
-            "E",
-            "F",
-            "G",
-            "H",
-            "I",
-            "J",
-            "K",
-            "L",
-            "M",
-            "N",
-            "O",
-            "P",
-            "Q",
-            "R",
-            "S",
-            "T",
-            "U",
-            "V",
-            "W",
-            "X",
-            "Y",
-            "Z",
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9"
-        );
+        $chars = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 
 
         $charsLen = count($chars) - 1;

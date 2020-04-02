@@ -26,6 +26,14 @@ class MockRequestLogController extends AdminController
     {
         $grid = new Grid(new MockRequestLog());
         $grid->disableCreateButton();
+        $grid->disableExport();
+        $grid->actions(function ($actions) {
+            // 去掉删除
+            $actions->disableDelete();
+            // 去掉编辑
+            $actions->disableEdit();
+        });
+
         $grid->filter(function(Grid\Filter $filter){
             $filter->disableIdFilter();
             $filter->like('project_id', '项目id');
@@ -44,6 +52,8 @@ class MockRequestLogController extends AdminController
         $grid->column('request_method', '请求方式');
         $grid->column('response', '响应')->hide();
         $grid->column('creat_time', '创建时间');
+
+
 
         return $grid;
     }
@@ -67,6 +77,7 @@ class MockRequestLogController extends AdminController
         $show->field('request_method', '请求方式');
         $show->field('response', '响应');
         $show->field('creat_time', '创建时间');
+
 
         return $show;
     }
