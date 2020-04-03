@@ -70,9 +70,11 @@ class MethodFunctionController extends Controller
         $methodPragram = $methodRes->pragram ?? '';
         $pragrams = explode(',', $methodPragram);
         foreach ($pragrams as $pragram) {
-            $function = "get" . $pragram;
-            $replace = MethodFunctionController::getpragram($function, $data);
-            $response = str_replace("{{" . $pragram . "}}", $replace, $response);
+            if($pragram!=null) {
+                $function = "get" . $pragram;
+                $replace = MethodFunctionController::getpragram($function, $data);
+                $response = str_replace("{{" . $pragram . "}}", $replace, $response);
+            }
         }
         return $response;
     }
