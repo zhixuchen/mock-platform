@@ -69,8 +69,7 @@ class MockProjectController extends AdminController
 
         $form->text('project','项目');
         $form->text('name','名称');
-        $form->text('rule','规则');
-
+        $form->textarea('rule','规则');
         return $form;
     }
 }
