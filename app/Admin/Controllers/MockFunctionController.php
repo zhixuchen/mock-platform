@@ -26,10 +26,15 @@ class MockFunctionController extends AdminController
     {
         $grid = new Grid(new MockFunction());
 
-        $grid->column('id', __('Id'));
-        $grid->column('type', __('Type'));
-        $grid->column('function_name', __('Function name'));
-        $grid->column('value', __('Value'));
+//        $grid->column('id', __('Id'));
+        $grid->filter(function(Grid\Filter $filter){
+            $filter->disableIdFilter();
+            $filter->like('type', '类型');
+            $filter->like('function_name', '方法名');
+        });
+        $grid->column('type','类型');
+        $grid->column('function_name', '方法名');
+        $grid->column('value', '执行代码');
 
         return $grid;
     }
@@ -45,9 +50,9 @@ class MockFunctionController extends AdminController
         $show = new Show(MockFunction::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('type', __('Type'));
-        $show->field('function_name', __('Function name'));
-        $show->field('value', __('Value'));
+        $show->field('type', '类型');
+        $show->field('function_name', '方法名');
+        $show->field('value','执行代码');
 
         return $show;
     }
@@ -61,9 +66,9 @@ class MockFunctionController extends AdminController
     {
         $form = new Form(new MockFunction());
 
-        $form->text('type', __('Type'));
-        $form->text('function_name', __('Function name'));
-        $form->textarea('value', __('Value'));
+        $form->text('type', '类型');
+        $form->text('function_name', '方法名');
+        $form->textarea('value', '执行代码');
 
         return $form;
     }
