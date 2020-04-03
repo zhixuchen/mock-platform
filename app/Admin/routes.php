@@ -13,6 +13,7 @@ Route::group([
     $router->resource('mockProjectMethod', MockProjectMethodController::class);
     $router->resource('Callback', MockCallbackController::class);
     $router->resource('Request_log', MockRequestLogController::class);
+    $router->resource('MockFunction', MockFunctionController::class);
     $router->get('/', 'HomeController@index')->name('admin.home');
 
 });

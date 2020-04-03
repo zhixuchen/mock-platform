@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\MockFunction;
 use App\Models\MockProjectMethod;
 use App\Models\MockRequestLog;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use App\Models\MockProject;
 class MethodFunctionController extends Controller
 {
 
-    public static function  method_callback($project,$platform,$env,$status,$businessno)
+    public static function method_callback($project, $platform, $env, $status, $businessno)
     {
         $callbackRes = MockProject::select(
             'mock_callback.pragram',
@@ -30,19 +31,12 @@ class MethodFunctionController extends Controller
                 $data = $callback->request_body;
                 $pragrams = explode(',', $callback->pragram);
                 foreach ($pragrams as $pragram) {
-                    if ($pragram == "OrderNum") {
-                        $OrderNum = $businessno;
-                        $data = str_replace("{{OrderNum}}", $OrderNum, $data);
-                    } elseif ($pragram == "Sign") {
-                        $Sign = MethodFunctionController::getSign($data, $businessno, $status);
-                        $data = str_replace("{{Sign}}", $Sign, $data);
-                    } elseif ($pragram == "businessno") {
-                        $data = str_replace("{{businessno}}", $businessno, $data);
-                    } elseif ($pragram == "orderNo") {
-                        $data = str_replace("{{orderNo}}", $businessno, $data);
-                    } elseif ($pragram == "ontractUniqueId") {
-                        $data = str_replace("{{ontractUniqueId}}", $businessno, $data);
+                    if ($pragram == "Sign") {
+                        $replace = MethodFunctionController::getSign($data, $businessno, $status);
+                    } else {
+                        $replace = $businessno;
                     }
+                    $data = str_replace("{{" . $pragram . "}}", $replace, $data);
                 }
                 $callback_id = $callback->id;
                 $callback_name = $callback->name;
@@ -51,69 +45,66 @@ class MethodFunctionController extends Controller
             }
         }
         $url = MethodFunctionController::get_url($platform, $env);
-        if ($project=="renbao"){
-            $url=$url.$uri;
-            $response=MethodFunctionController::encryption($url,$data,$callback_id,$callback_name);}
-        elseif($project=="jingzhengu" or $project=="efq" or $project=="zhongjin"){
-            $response=MethodFunctionController::post($url,$data,$uri);
-
-            MethodFunctionController::set_request_log("callback",$callback_id,$callback_name,$url.$uri,$data,"POST",$response);
-            if ($project=="efq"){
-//                $time_response=MethodFunctionController::exe_time($env);
-                $url="http://callback-beta.saasyc.com/time.php?name=".$env;
-                $time_response=MethodFunctionController::get($url);
-                MethodFunctionController::set_request_log("callback",0,"定时回调",$url,"","GET",$time_response);
-            }
+        $type = "callback";
+        if ($project == "renbao") {
+            $url = $url . $uri;
+            $result = MethodFunctionController::encryption($url, $data, $callback_id, $callback_name);
+            $url = $result->url;
+            $data = $result->data;
+            $uri = $result->uri;
         }
-
+        $response = MethodFunctionController::post($url, $data, $uri);
+        MethodFunctionController::set_request_log($type, $callback_id, $callback_name, $url . $uri, $data, "POST", $response);
+        if ($project == "efq") {
+            $url = "http://callback-beta.saasyc.com/time.php?name=" . $env;
+            $time_response = MethodFunctionController::get($url);
+            MethodFunctionController::set_request_log($type, 0, "定时回调", $url, "", "GET", $time_response);
+        }
         return $response;
     }
-    public static function method_request($method_id,$data,$error_result){
+
+    public static function method_request($method_id, $data, $error_result)
+    {
         $methodRes = MockProjectMethod::where('id', $method_id)->first();
         $response = $methodRes->result ?? $error_result;
         $methodPragram = $methodRes->pragram ?? '';
         $pragrams = explode(',', $methodPragram);
         foreach ($pragrams as $pragram) {
-            $function="get".$pragram;
-            $replace = MethodFunctionController::$function($data);
-            $response = str_replace("{{".$pragram."}}", $replace, $response);
+            $function = "get" . $pragram;
+            $replace = MethodFunctionController::getpragram($function, $data);
+            $response = str_replace("{{" . $pragram . "}}", $replace, $response);
         }
         return $response;
     }
 
-    public static function set_request_log($type,$method_id,$name,$request_url,$request_body,$request_method,$response){
-        $creat_time=date('Y-m-d h:i:s', time());
-        $log=array(
-            "id"=>"",
-            "type"=>$type,
-            "method_id"=>$method_id,
-            "name"=>$name,
-            "request_url"=>$request_url,
-            "request_body"=>$request_body,
-            "request_method"=>$request_method,
-            "response"=>$response,
-            "creat_time"=>$creat_time
+    public static function set_request_log($type, $method_id, $name, $request_url, $request_body, $request_method, $response)
+    {
+        $creat_time = date('Y-m-d h:i:s', time());
+        $log = array(
+            "id" => "",
+            "type" => $type,
+            "method_id" => $method_id,
+            "name" => $name,
+            "request_url" => $request_url,
+            "request_body" => $request_body,
+            "request_method" => $request_method,
+            "response" => $response,
+            "creat_time" => $creat_time
         );
-        $result=MockRequestLog::insert($log);
+        $result = MockRequestLog::insert($log);
 //        dd($result);
         if ($result != true) {
             echo "新记录插入失败";
         }
-
-
-
     }
 
     public static function getmethod_uri($uri)
     {
-
         $methodRes = MockProjectMethod::get();
         foreach (json_decode($methodRes) as $value) {
             $method_uri = $value->uri;
-
             if (strpos($uri, $method_uri) or strpos($uri, $method_uri) === 0) {
                 $method_uri = $method_uri;
-
                 return $method_uri;
             }
 
@@ -137,7 +128,7 @@ class MethodFunctionController extends Controller
             $rule = $methodRe->rule;
             $route = $methodRe->route;
             if (strlen($route) != 0) {
-                eval($rule);
+                $value = eval($rule);
                 if ($route == $value) {
                     $method_id = $methodRe->id;
                     $name = $methodRe->name;
@@ -148,8 +139,7 @@ class MethodFunctionController extends Controller
 
                     return $result;
                 }
-            }
-            else {
+            } else {
                 $method_id = $methodRe->id;
                 $name = $methodRe->name;
                 $result = array(
@@ -170,53 +160,11 @@ class MethodFunctionController extends Controller
         return $result;
     }
 
-
-    public static function getvin($data)
+    public static function getpragram($function_name, $data)
     {
-        $chars = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-
-
-        $charsLen = count($chars) - 1;
-        shuffle($chars);                            //打乱数组顺序
-        $str = '';
-        for ($i = 0; $i < 17; $i++) {
-            $str .= $chars[mt_rand(0, $charsLen)];    //随机取出一位
-        }
-        return $str;
-    }
-
-    public static function gettongdun_id($data)
-    {
-        $time = time();
-        $n = rand(0, 9);
-        $id = "WF20181207180" . $time . $n;
-        return $id;
-    }
-
-    public static function getcreatbusinessno($data)
-    {
-        $Businessno = "CL" . time() . "000";;
-        return $Businessno;
-    }
-
-    public static function getbusinessno($data)
-    {
-        $Businessno = json_decode($data)->Businessno;
-        // echo "12312";
-        return $Businessno;
-    }
-
-    public static function getestageOrderNo($data)
-    {
-        $estageOrderNo = 'test' . md5(time());
-        return $estageOrderNo;
-    }
-
-    public static function getorderNo($data)
-    {
-        $orderNo = json_decode($data)->pub->orderNo;
-        return $orderNo;
-
+        $function_code = MockFunction::where('function_name', $function_name)->first();
+        $result = eval($function_code->value);
+        return $result;
 
     }
 
@@ -236,9 +184,9 @@ class MethodFunctionController extends Controller
 
     }
 
-    public static function get($url){
+    public static function get($url)
+    {
         $curl = curl_init();
-
         curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
@@ -249,16 +197,13 @@ class MethodFunctionController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
         ));
-
         $response = curl_exec($curl);
-
         curl_close($curl);
         return $response;
-
-
     }
 
-    public static function post($url,$data, $uri){
+    public static function post($url, $data, $uri)
+    {
 
         $url = $url . $uri;
         $curl = curl_init();
@@ -289,7 +234,8 @@ class MethodFunctionController extends Controller
         }
     }
 
-    public static function encryption($url,$data,$method_id,$method_name){
+    public static function encryption($url, $data)
+    {
         $AES_KEY = '4964cbbcbd7511e9';
         $MD5_KEY = '339c989fbd7511e89d0700155d99c30b';
         $agentcode = 'LR201909';
@@ -298,76 +244,17 @@ class MethodFunctionController extends Controller
         $nonce = '12345678';
         $str_signature = "agentcode=$agentcode&projectcode=$projectcode&timestamp=$timestamp&nonce=$nonce&data=$data&key=$MD5_KEY";
         $signature = md5($str_signature);
-        $aes_str = MethodFunctionController::encrypt($data, $AES_KEY);
+        $aes_str = openssl_encrypt($data, 'AES-128-ECB', $AES_KEY, OPENSSL_RAW_DATA);
         $base64_data = base64_encode($aes_str);
         $uri = "agentcode=$agentcode&projectcode=$projectcode&timestamp=$timestamp&nonce=$nonce&signature=$signature";
-        $response=MethodFunctionController::post($url,$base64_data, $uri);
-        MethodFunctionController::set_request_log("callback",$method_id,$method_name,$url.$uri,$data,"POST",$response);
-        return $response;
-    }
-    /**
-     *
-     * @param string $string 需要加密的字符串
-     * @param string $key 密钥
-     * @return string
-     */
-    public static function encrypt($string, $key)
-    {
-
-        // openssl_encrypt 加密不同Mcrypt，对秘钥长度要求，超出16加密结果不变
-        $data = openssl_encrypt($string, 'AES-128-ECB', $key, OPENSSL_RAW_DATA);
-
-        return $data;
-    }
-
-
-    /**
-     * @param string $string 需要解密的字符串
-     * @param string $key 密钥
-     * @return string
-     */
-    public static function decrypt($string, $key)
-    {
-        $decrypted = openssl_decrypt($string, 'AES-128-ECB', $key, OPENSSL_RAW_DATA);
-
-        return $decrypted;
-    }
-
-    public static function exe_time($env){##不知道什么原因执行成功了，但是没效果
-//        $command1="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:DealICBCCallback";
-//        $command2="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:AccordICBCCallbackAffectTradeCommand";
-//        $command3="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan yiche:DealNotifyTradeCallbackInfoToThirdClientCommand";
-        $command4="/www/server/php/72/bin/php /www/code/saasyc/api/".$env."/artisan yiche:DealGenerateCompressedZip";
-        $command5="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan overdue:deadline";
-        $command6="/www/server/php/72/bin/php /www/code/saasyc/server/".$env."/artisan schedule:run";
-
-//        exec($command1,$log,$status);#对E分期回调进行解析
-
-
-//        exec($command2,$log,$status);#对E分期解析后的数据推送给yiche-api
-
-//        exec($command3,$log,$status);#对E分期解析后的数据推送给yiche-open
-
-//exec($command4);#对下载打包
-//exec($command5);#贷后定时处理件
-        system($command6,$status);
-        dd($status);
-
-
-        $result=array(
-            "code"=>0,
-            "msg"=>"success",
-            "platform"=>$env,
-            "command1"=>$command1,
-            "command2"=>$command2,
-            "command3"=>$command3,
-            "command6"=>$command6,
-//    "command4"=>$command4,
-//    "command5"=>$command5,
+        $result = array(
+            "url" => $url,
+            "data" => $base64_data,
+            "uri" => $uri
         );
-        $result=json_encode($result);
         return $result;
 
 
     }
+
 }

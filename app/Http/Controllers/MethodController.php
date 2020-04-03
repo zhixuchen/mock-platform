@@ -21,9 +21,7 @@ class MethodController extends MethodFunctionController
         $businessno=$request->get("businessno");
 
         if(strpos($uri,"callback")){
-
             $response=MethodFunctionController::method_callback($project,$platform,$env,$status,$businessno);
-
         }else{
             $request_uri = MethodFunctionController::getmethod_uri($uri);
             $request_method=$request->method();

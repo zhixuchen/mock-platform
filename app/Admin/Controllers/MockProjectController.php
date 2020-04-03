@@ -54,6 +54,7 @@ class MockProjectController extends AdminController
         $show->field('name', '名称');
         $show->field('rule', '规则');
 
+
         return $show;
     }
 
