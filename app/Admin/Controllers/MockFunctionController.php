@@ -15,7 +15,7 @@ class MockFunctionController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\MockFunction';
+    protected $title = 'Mock自定义方法表';
 
     /**
      * Make a grid builder.
