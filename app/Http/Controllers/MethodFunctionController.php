@@ -48,10 +48,11 @@ class MethodFunctionController extends Controller
         $type = "callback";
         if ($project == "renbao") {
             $url = $url . $uri;
+
             $result = MethodFunctionController::encryption($url, $data, $callback_id, $callback_name);
-            $url = $result->url;
-            $data = $result->data;
-            $uri = $result->uri;
+            $url = $result["url"];
+            $data = $result["data"];
+            $uri = $result["uri"];
         }
         $response = MethodFunctionController::post($url, $data, $uri);
         MethodFunctionController::set_request_log($type, $callback_id, $callback_name, $url . $uri, $data, "POST", $response);
@@ -254,6 +255,7 @@ class MethodFunctionController extends Controller
             "data" => $base64_data,
             "uri" => $uri
         );
+
         return $result;
 
 
