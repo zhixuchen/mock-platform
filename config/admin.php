@@ -58,7 +58,7 @@ return [
     */
     'route' => [
 
-        'prefix' => env('ADMIN_ROUTE_PREFIX', 'adminyc'),
+        'prefix' => env('ADMIN_ROUTE_PREFIX', ''),
 
         'namespace' => 'App\\Admin\\Controllers',
 
