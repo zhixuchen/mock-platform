@@ -27,12 +27,14 @@ class MethodController extends MethodFunctionController
             $request_method=$request->method();
             $url="http://".$request->getHttpHost().$request->getRequestUri();
             $data =json_encode( $request->post());
+//            $data=json_encode($request->all());
             $getmethod=MethodFunctionController::getmethod_id($data,$request_uri);
             $method_name=$getmethod["name"];
             $error_result=json_encode(array("url"=>$url,"method"=>$request_method,"body"=>$data));
             $method_id=$getmethod["method_id"];
+            $id=MethodFunctionController::set_request_log("request",$method_id,$method_name,$url,$data,$request_method,null);
             $response=MethodFunctionController::method_request($method_id,$data,$error_result);
-            MethodFunctionController::set_request_log("request",$method_id,$method_name,$url,$data,$request_method,$response);
+            MethodFunctionController::updata_request_log($id,$response);
 
         }
         return response()->json(json_decode($response, true));

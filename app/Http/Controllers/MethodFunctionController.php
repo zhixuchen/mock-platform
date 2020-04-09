@@ -94,11 +94,21 @@ class MethodFunctionController extends Controller
             "response" => $response,
             "creat_time" => $creat_time
         );
-        $result = MockRequestLog::insert($log);
-//        dd($result);
-        if ($result != true) {
+        try {
+            $id = MockRequestLog::insertGetId($log);
+            return $id;
+        }catch (Exception $e){
+
             echo "新记录插入失败";
         }
+    }
+
+    public  static  function  updata_request_log($id,$response){
+        $log=array(
+            "response"=>$response
+        );
+        MockRequestLog::where("id",$id)->update($log);
+        
     }
 
     public static function getmethod_uri($uri)
