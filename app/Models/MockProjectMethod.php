@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MockProjectMethod extends Model
 {
-    protected $table = 'mock_project_method';
+    protected $table = 'mock_method';
     public $timestamps = false;
 
 }
