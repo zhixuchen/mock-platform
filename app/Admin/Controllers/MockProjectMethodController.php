@@ -31,7 +31,7 @@ class MockProjectMethodController extends AdminController
             $filter->like('project_id', '项目id');
             $filter->like('name', '方法名称');
             $filter->like('uri', '接口地址');
-            $filter->like('pragram', '可变参数');
+            $filter->like('parameter', '可变参数');
         });
         $grid->column('id', __('Id'));
         $grid->column('project_id','项目id');
@@ -40,7 +40,7 @@ class MockProjectMethodController extends AdminController
         $grid->column('route', '路由');
         $grid->column('type', 'mock类型（默认1）');
         $grid->column('result', 'mock返回结果')->hide();
-        $grid->column('pragram', '可变参数');
+        $grid->column('parameter', '可变参数');
 
 
         return $grid;
@@ -63,7 +63,7 @@ class MockProjectMethodController extends AdminController
         $show->field('route', '路由');
         $show->field('type','mock类型（默认1）');
         $show->field('result', 'mock返回结果');
-        $show->field('pragram', '可变参数');
+        $show->field('parameter', '可变参数');
 
         return $show;
     }
@@ -83,7 +83,7 @@ class MockProjectMethodController extends AdminController
         $form->text('route', '路由');
         $form->number('type', 'mock类型（默认1）')->default(1);
         $form->textarea('result','mock返回结果');
-        $form->text('pragram', '可变参数');
+        $form->text('parameter', '可变参数');
 
         return $form;
     }

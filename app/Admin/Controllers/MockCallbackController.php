@@ -37,7 +37,7 @@ class MockCallbackController extends AdminController
         $grid->column('name', '回调名称');
         $grid->column('request_uri', '回调接口地址');
         $grid->column('request_body', '请求BODY')->hide();
-        $grid->column('pragram', '传参');
+        $grid->column('parameter', '传参');
         $grid->column('status', '状态');
 
         return $grid;
@@ -58,7 +58,7 @@ class MockCallbackController extends AdminController
         $show->field('name', '回调名称');
         $show->field('request_uri','回调接口地址');
         $show->field('request_body', '请求BODY');
-        $show->field('pragram', '传参');
+        $show->field('parameter', '传参');
         $show->field('status', '状态');
 
         return $show;
@@ -77,7 +77,7 @@ class MockCallbackController extends AdminController
         $form->text('name', '回调名称');
         $form->text('request_uri','回调接口地址');
         $form->textarea('request_body','请求BODY');
-        $form->text('pragram', '传参');
+        $form->text('parameter', '传参');
         $form->text('status', '状态');
 
         return $form;

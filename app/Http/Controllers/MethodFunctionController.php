@@ -16,7 +16,7 @@ class MethodFunctionController extends Controller
     public static function method_callback($project, $platform, $env, $status, $businessno)
     {
         $callbackRes = MockProject::select(
-            'mock_callback.pragram',
+            'mock_callback.parameter',
             'mock_callback.project_id',
             'mock_callback.request_uri',
             'mock_callback.id',
@@ -29,14 +29,14 @@ class MethodFunctionController extends Controller
         foreach ($callbackRes as $callback) {
             if ($status == $callback->status) {
                 $data = $callback->request_body;
-                $pragrams = explode(',', $callback->pragram);
-                foreach ($pragrams as $pragram) {
-                    if ($pragram == "Sign") {
+                $parameters = explode(',', $callback->parameter);
+                foreach ($parameters as $parameter) {
+                    if ($parameter == "Sign") {
                         $replace = MethodFunctionController::getSign($data, $businessno, $status);
                     } else {
                         $replace = $businessno;
                     }
-                    $data = str_replace("{{" . $pragram . "}}", $replace, $data);
+                    $data = str_replace("{{" . $parameter . "}}", $replace, $data);
                 }
                 $callback_id = $callback->id;
                 $callback_name = $callback->name;
@@ -68,13 +68,13 @@ class MethodFunctionController extends Controller
     {
         $methodRes = MockProjectMethod::where('id', $method_id)->first();
         $response = $methodRes->result ?? $error_result;
-        $methodPragram = $methodRes->pragram ?? '';
-        $pragrams = explode(',', $methodPragram);
-        foreach ($pragrams as $pragram) {
-            if($pragram!=null) {
-                $function = "get" . $pragram;
-                $replace = MethodFunctionController::getpragram($function, $data);
-                $response = str_replace("{{" . $pragram . "}}", $replace, $response);
+        $methodParameter = $methodRes->parameter ?? '';
+        $parameters = explode(',', $methodParameter);
+        foreach ($parameters as $parameter) {
+            if($parameter!=null) {
+                $function = "get" . $parameter;
+                $replace = MethodFunctionController::getparameter($function, $data);
+                $response = str_replace("{{" . $parameter . "}}", $replace, $response);
             }
         }
         return $response;
@@ -173,7 +173,7 @@ class MethodFunctionController extends Controller
         return $result;
     }
 
-    public static function getpragram($function_name, $data)
+    public static function getparameter($function_name, $data)
     {
         $function_code = MockFunction::where('function_name', $function_name)->first();
         $result = eval($function_code->value);

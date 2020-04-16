@@ -33,14 +33,14 @@ namespace App\Models{
  * @property string|null $name
  * @property string|null $request_uri
  * @property string|null $request_body
- * @property string|null $pragram
+ * @property string|null $parameter
  * @property string|null $status
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback wherePragram($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback whereParameter($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback whereRequestBody($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockCallback whereRequestUri($value)
@@ -61,13 +61,13 @@ namespace App\Models{
  * @property string|null $route
  * @property int $type 1:同步响应；2：异步回调
  * @property string|null $result
- * @property string|null $pragram 变化的参数
+ * @property string|null $parameter 变化的参数
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod wherePragram($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod whereParameter($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod whereResult($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MockProjectMethod whereRoute($value)
